@@ -13,6 +13,14 @@ services:
       - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - phonebook_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d phonebook"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
       
   pgadmin:
     image: dpage/pgadmin4
@@ -22,5 +30,25 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "8080:80"
+    networks:
+      - phonebook_network
     depends_on:
       - db
+
+  app:
+    build: .
+    container_name: phonebook_app
+    networks:
+      - phonebook_network
+    depends_on:
+      db:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+
+networks:
+  phonebook_network:
+    driver: bridge
