@@ -95,6 +95,7 @@ def main():
             print("\n--- Список контактов ---")
             contacts = db.get_all_contacts(conn)
             print_contacts(contacts)
+            input("\nНажмите Enter, чтобы вернуться в меню...")
                 
         elif choice == "5":
             print("Выход из программы...")
