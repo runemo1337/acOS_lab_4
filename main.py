@@ -2,7 +2,6 @@ import db
 import re
 
 def validate_name(name):
-    """Проверка ФИО: только буквы, пробелы, дефис, не пустое"""
     if not name or len(name.strip()) == 0:
         return False, "ФИО не может быть пустым"
     if not re.match(r'^[а-яА-ЯёЁa-zA-Z\s\-]+$', name):
@@ -12,19 +11,17 @@ def validate_name(name):
     return True, ""
 
 def validate_phone(phone):
-    """Проверка телефона: цифры, может начинаться с +, длина 10-15"""
     phone = phone.strip()
     if not phone:
         return False, "Телефон не может быть пустым"
     phone_clean = phone.lstrip('+')
     if not phone_clean.isdigit():
-        return False, "Телефон должен содержать только цифры (и + в начале)"
+        return False, "Телефон должен содержать только цифры (или + в начале)"
     if len(phone_clean) < 10 or len(phone_clean) > 15:
         return False, "Телефон должен содержать 10-15 цифр"
     return True, ""
 
 def validate_note(note):
-    """Проверка заметки: не длиннее 200 символов"""
     if note and len(note) > 200:
         return False, "Заметка не должна превышать 200 символов"
     return True, ""

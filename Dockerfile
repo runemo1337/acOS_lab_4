@@ -1,6 +1,5 @@
 FROM python:3.11-slim
 
-# Устанавливаем поддержку русской локали
 ENV PYTHONIOENCODING=utf-8
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8

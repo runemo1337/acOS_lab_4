@@ -26,7 +26,7 @@ def create_contact(conn, full_name, phone_number, note):
             (full_name, phone_number, note)
         )
         conn.commit()
-        print("✅ Контакт добавлен")
+        print("Контакт добавлен")
 
 def get_all_contacts(conn):
     with conn.cursor() as cur:
@@ -45,10 +45,10 @@ def update_contact(conn, contact_id, full_name, phone_number, note):
             (full_name, phone_number, note, contact_id)
         )
         conn.commit()
-        print("✅ Контакт обновлён")
+        print("Контакт обновлён")
 
 def delete_contact(conn, contact_id):
     with conn.cursor() as cur:
         cur.execute("DELETE FROM contacts WHERE id = %s", (contact_id,))
         conn.commit()
-        print("✅ Контакт удалён")
+        print("Контакт удалён")
