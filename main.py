@@ -1,4 +1,33 @@
 import db
+import re
+
+def validate_name(name):
+    """Проверка ФИО: только буквы, пробелы, дефис, не пустое"""
+    if not name or len(name.strip()) == 0:
+        return False, "ФИО не может быть пустым"
+    if not re.match(r'^[а-яА-ЯёЁa-zA-Z\s\-]+$', name):
+        return False, "ФИО должно содержать только буквы, пробелы и дефис"
+    if len(name) > 100:
+        return False, "ФИО не должно превышать 100 символов"
+    return True, ""
+
+def validate_phone(phone):
+    """Проверка телефона: цифры, может начинаться с +, длина 10-15"""
+    phone = phone.strip()
+    if not phone:
+        return False, "Телефон не может быть пустым"
+    phone_clean = phone.lstrip('+')
+    if not phone_clean.isdigit():
+        return False, "Телефон должен содержать только цифры (и + в начале)"
+    if len(phone_clean) < 10 or len(phone_clean) > 15:
+        return False, "Телефон должен содержать 10-15 цифр"
+    return True, ""
+
+def validate_note(note):
+    """Проверка заметки: не длиннее 200 символов"""
+    if note and len(note) > 200:
+        return False, "Заметка не должна превышать 200 символов"
+    return True, ""
 
 def print_contacts(contacts):
     if not contacts:
@@ -31,14 +60,29 @@ def main():
         
         if choice == "1":
             print("\n--- Добавление контакта ---")
-            name = input("ФИО: ").strip()
-            phone_number = input("Телефон: ").strip()
-            note = input("Заметка: ").strip()
             
-            if name and phone_number:
-                db.create_contact(conn, name, phone_number, note)
-            else:
-                print("Ошибка: ФИО и телефон обязательны!")
+            while True:
+                name = input("ФИО: ").strip()
+                valid, error = validate_name(name)
+                if valid:
+                    break
+                print(f"Ошибка: {error}")
+            
+            while True:
+                phone = input("Телефон: ").strip()
+                valid, error = validate_phone(phone)
+                if valid:
+                    break
+                print(f"Ошибка: {error}")
+            
+            while True:
+                note = input("Заметка: ").strip()
+                valid, error = validate_note(note)
+                if valid:
+                    break
+                print(f"Ошибка: {error}")
+            
+            db.create_contact(conn, name, phone, note)
                 
         elif choice == "2":
             print("\n--- Изменение контакта ---")
@@ -59,17 +103,35 @@ def main():
                     
                 print("\nОставьте поле пустым, чтобы оставить старое значение")
                 
-                new_name = input(f"Новое ФИО ({old_data[0]}): ").strip()
-                if not new_name:
-                    new_name = old_data[0]
-                    
-                new_phone = input(f"Новый телефон ({old_data[1]}): ").strip()
-                if not new_phone:
-                    new_phone = old_data[1]
-                    
-                new_note = input(f"Новая заметка ({old_data[2]}): ").strip()
-                if not new_note:
-                    new_note = old_data[2]
+                while True:
+                    new_name = input(f"Новое ФИО ({old_data[0]}): ").strip()
+                    if not new_name:
+                        new_name = old_data[0]
+                        break
+                    valid, error = validate_name(new_name)
+                    if valid:
+                        break
+                    print(f"Ошибка: {error}")
+                
+                while True:
+                    new_phone = input(f"Новый телефон ({old_data[1]}): ").strip()
+                    if not new_phone:
+                        new_phone = old_data[1]
+                        break
+                    valid, error = validate_phone(new_phone)
+                    if valid:
+                        break
+                    print(f"Ошибка: {error}")
+                
+                while True:
+                    new_note = input(f"Новая заметка ({old_data[2]}): ").strip()
+                    if not new_note:
+                        new_note = old_data[2]
+                        break
+                    valid, error = validate_note(new_note)
+                    if valid:
+                        break
+                    print(f"Ошибка: {error}")
                     
                 db.update_contact(conn, contact_id, new_name, new_phone, new_note)
                 
@@ -106,5 +168,4 @@ def main():
             print("Неверный выбор. Попробуйте снова.")
 
 if __name__ == "__main__":
-    # Проверяем, что это главный модуль
     main()
